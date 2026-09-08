@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>MR NOIR — Extrait de Parfum</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505}
+body{position:fixed;inset:0;overscroll-behavior:none}
+#app{position:fixed;inset:0;width:100vw;height:100dvh;overflow:hidden;background:#050505}
+#art{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center center}
+.hot{position:absolute;z-index:10;transform:translate(-50%,-50%);width:13vw;height:15vh;min-width:44px;min-height:70px;max-width:105px;max-height:145px;background:transparent;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hot::after{content:"+";position:absolute;left:50%;top:6%;transform:translate(-50%,-50%);width:34px;height:34px;border:1.5px solid #efd27a;border-radius:50%;background:rgba(0,0,0,.22);color:#efd27a;font:28px/31px Arial,sans-serif;text-align:center;text-shadow:0 1px 5px #000}
+.hot:focus{outline:none}
+.infoHot::after{display:none!important;content:none!important}
+#adminBtn{position:absolute;z-index:30;right:26%;top:12px;min-width:82px;background:rgba(4,4,4,.48);border:1px solid rgba(236,205,128,.72);color:#efd287;padding:8px 11px;font:8px Arial,sans-serif;letter-spacing:2px;border-radius:2px}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:15px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px)}
+.modal.open{display:flex}
+.card{position:relative;width:min(560px,94vw);max-height:92dvh;overflow:auto;background:linear-gradient(145deg,#18130e,#050505);border:1px solid #aa853e;color:#eee;padding:22px;box-shadow:0 25px 80px #000;font-family:Arial,sans-serif}
+.close{position:absolute;right:9px;top:8px;width:32px;height:32px;background:#080808;border:1px solid #8f6d35;color:#e8c776;font-size:22px}
+.kicker{font-size:9px;letter-spacing:3px;color:#cba75b;margin-bottom:8px}
+h2{font:400 28px Georgia,serif;letter-spacing:1px;margin:0 0 7px}
+.price{font-size:23px;color:#e1bd67;margin:13px 0}
+.char{font-size:10px;letter-spacing:1.4px;color:#aaa}
+.meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.pill{border:1px solid #594624;padding:7px 9px;font-size:9px;color:#d9c9a9}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}
+.note{border-top:1px solid #4f3c20;padding-top:9px;font-size:10px;line-height:1.5;color:#c4c4c4}
+.note b{display:block;color:#d5b263;font-size:8px;letter-spacing:1.2px;margin-bottom:4px}
+.buy{display:block;margin-top:17px;padding:13px;text-align:center;background:#d2af61;color:#080604;text-decoration:none;font-weight:700;letter-spacing:1px}
+.warn{font-size:10px;color:#999;margin-top:9px;line-height:1.45}
+input{width:100%;padding:11px;margin:7px 0;background:#0b0b0b;border:1px solid #4d3b20;color:#fff}
+.save{padding:11px 16px;background:#d2af61;border:0;font-weight:700}
+.row{border:1px solid #40321e;padding:12px;margin-top:10px}
+.row h3{font:400 14px Georgia,serif;color:#dfbd6c;margin:0 0 7px}
+
+.infoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.infoBox{border:1px solid #4f3c20;padding:12px;background:rgba(255,255,255,.02)}
+.infoBox b{display:block;color:#d5b263;font-size:9px;letter-spacing:1.2px;margin-bottom:6px}
+.infoBox span{display:block;color:#c8c8c8;font-size:10px;line-height:1.55}
+
+@media(max-width:600px){
+ .hot{width:17vw;height:14vh}
+ #adminBtn{right:20%;top:8px;min-width:76px;padding:7px 8px;font-size:7px}
+ .notes{grid-template-columns:1fr}
+ .card{padding:18px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <img id="art" src="mr-noir-site.webp" alt="MR NOIR Extrait de Parfum">
+  <button id="adminBtn">YETKİLİ</button>
+</div>
+
+<div id="productModal" class="modal">
+  <div class="card">
+    <button class="close" onclick="closeModal('productModal')">×</button>
+    <div class="kicker">MR NOIR · EXTRAIT DE PARFUM</div>
+    <h2 id="pn"></h2>
+    <div id="pc" class="char"></div>
+    <div id="pp" class="price"></div>
+    <div class="meta">
+      <span id="pm" class="pill"></span>
+      <span id="pl" class="pill"></span>
+      <span class="pill">EXTRAIT DE PARFUM</span>
+    </div>
+    <div class="notes">
+      <div class="note"><b>ÜST NOTALAR</b><span id="pt"></span></div>
+      <div class="note"><b>KALP NOTALAR</b><span id="ph"></span></div>
+      <div class="note"><b>DİP NOTALAR</b><span id="pb"></span></div>
+    </div>
+    <a id="buy" class="buy" href="#" target="_blank" rel="noopener">GÜVENLİ ÖDEMEYE GEÇ →</a>
+    <div id="warn" class="warn">Shopier ürün bağlantısı yönetici panelinden eklenir.</div>
+  </div>
+</div>
+
+
+<div id="infoModal" class="modal">
+  <div class="card">
+    <button class="close" onclick="closeModal('infoModal')">×</button>
+    <div class="kicker">MR NOIR · BİLGİLENDİRME</div>
+    <h2 id="infoTitle">Güvenli E-Ticaret</h2>
+    <div class="infoGrid">
+      <div class="infoBox"><b>GÜVENLİ ÖDEME</b><span>Ödeme işlemleri güvenli ödeme altyapısı üzerinden gerçekleştirilir. Kart bilgileri MR NOIR sitesinde tutulmaz.</span></div>
+      <div class="infoBox"><b>ORİJİNAL ÜRÜN</b><span>MR NOIR ürünleri orijinal ürün olarak gönderilir. Sipariş bilgileri satın alma sonrasında takip edilir.</span></div>
+      <div class="infoBox"><b>İADE PROGRAMI</b><span>İade talepleri ürün ve sipariş koşullarına göre değerlendirilir. Kullanım ve hijyen koşulları nedeniyle açılmış parfümlerde farklı şartlar uygulanabilir.</span></div>
+      <div class="infoBox"><b>DEĞİŞİM</b><span>Değişim talebinde sipariş numarası ve ürün durumu ile iletişime geçilir. Onaylanan işlemler için yönlendirme yapılır.</span></div>
+      <div class="infoBox"><b>HIZLI TESLİMAT</b><span>Siparişler ödeme onayından sonra hazırlanır ve uygun kargo yöntemiyle gönderilir.</span></div>
+      <div class="infoBox"><b>DESTEK</b><span>Sipariş, ödeme, kargo, iade ve değişim konularında destek kanalı üzerinden iletişim kurulabilir.</span></div>
+    </div>
+    <div class="warn">Not: İade ve değişim koşullarının kesin metni, satış koşulları ve tüketici mevzuatına uygun şekilde yönetici panelinden/ayrı politika sayfasından netleştirilmelidir.</div>
+  </div>
+</div>
+
+<div id="loginModal" class="modal">
+  <div class="card" style="max-width:380px">
+    <button class="close" onclick="closeModal('loginModal')">×</button>
+    <div class="kicker">MR NOIR · YETKİLİ GİRİŞ</div>
+    <h2>Yönetici</h2>
+    <input id="user" placeholder="Kullanıcı adı" autocomplete="username">
+    <input id="pass" type="password" placeholder="Şifre" autocomplete="current-password">
+    <button class="save" onclick="login()">GİRİŞ YAP</button>
+    <div id="err" class="warn"></div>
+  </div>
+</div>
+
+<div id="adminModal" class="modal">
+  <div class="card" style="width:min(650px,95vw)">
+    <button class="close" onclick="closeModal('adminModal')">×</button>
+    <div class="kicker">MR NOIR · YÖNETİCİ PANELİ</div>
+    <h2>Ürün Yönetimi</h2>
+    <div id="rows"></div>
+    <button class="save" onclick="saveAll()" style="margin-top:14px">KAYDET</button>
+    <div class="warn">Bu statik GitHub Pages sürümünde yönetici değişiklikleri yalnızca kullanılan tarayıcıda saklanır. Gerçek ortak yönetim ve güvenli kimlik doğrulama için sunucu tarafı gerekir.</div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_PRODUCTS = [{"name": "MR NOIR I · NOIR", "ml": "50 ML", "price": "₺0", "character": "DERİN · GÜÇLÜ · KARİZMATİK", "top": "Bergamot · Karabiber", "heart": "Sedir · Amber", "base": "Misk · Paçuli", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR NOIR II · OMBRE", "ml": "50 ML", "price": "₺0", "character": "GİZEMLİ · ÇEKİCİ · KARANLIK", "top": "Narenciye · Baharat", "heart": "Yasemin · Sedir", "base": "Vanilya · Amber", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR NOIR III · ÉLITE", "ml": "50 ML", "price": "₺0", "character": "SOFİSTİKE · ZARİF · ASİL", "top": "Taze narenciye", "heart": "Aromatik çiçekler", "base": "Odunsu · Misk", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR NOIR IV · SANG", "ml": "50 ML", "price": "₺0", "character": "TUTKULU · BAŞTAN ÇIKARICI · SICAK", "top": "Baharat · Meyve", "heart": "Gül · Amber", "base": "Vanilya · Odunsular", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR NOIR V · AZURE", "ml": "50 ML", "price": "₺0", "character": "FERAH · ENERJİK · CANLI", "top": "Narenciye · Deniz notaları", "heart": "Aromatik notalar", "base": "Misk · Odunsular", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR NOIR VI · VERT", "ml": "50 ML", "price": "₺0", "character": "DOĞAL · DENGELİ · HUZURLU", "top": "Narenciye · Baharat", "heart": "Çiçeksi · Reçinemsi", "base": "Amber · Odunsular", "longevity": "8–12 saat", "shopier": ""}];
+const HOTSPOTS = [[0.1, 0.485], [0.254, 0.485], [0.407, 0.485], [0.559, 0.485], [0.712, 0.485], [0.865, 0.485]];
+let products = JSON.parse(localStorage.getItem('MR_NOIR_PRODUCTS') || 'null') || DEFAULT_PRODUCTS;
+
+function imageBox(){
+  const W=innerWidth,H=innerHeight;
+  const iw=862, ih=1824;
+  const s=Math.min(W/iw,H/ih);
+  return {s,left:(W-iw*s)/2,top:(H-ih*s)/2};
+}
+
+function placeHotspots(){
+  document.querySelectorAll('.hot').forEach(e=>e.remove());
+  const m=imageBox(), app=document.getElementById('app');
+  HOTSPOTS.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='hot';
+    b.setAttribute('aria-label',products[i].name);
+    b.style.left=(m.left+p[0]*862*m.s)+'px';
+    b.style.top=(m.top+p[1]*1824*m.s)+'px';
+    b.onclick=()=>openProduct(i);
+    app.appendChild(b);
+  });
+}
+
+
+function openInfo(title){
+  document.getElementById('infoTitle').textContent = title || 'Güvenli E-Ticaret';
+  document.getElementById('infoModal').classList.add('open');
+}
+function addInfoHotspots(){
+  const app=document.getElementById('app');
+  [
+    ['Güvenli E-Ticaret',0.385,0.962],
+    ['İade & Değişim Programı',0.615,0.962],
+    ['Hızlı Teslimat',0.155,0.962],
+    ['Destek',0.845,0.962]
+  ].forEach(x=>{
+    const b=document.createElement('button');
+    b.className='hot infoHot';
+    b.style.left=(x[1]*innerWidth)+'px';
+    b.style.top=(x[2]*innerHeight)+'px';
+    b.style.width='18vw'; b.style.height='7vh';
+    b.setAttribute('aria-label',x[0]);
+    b.onclick=()=>openInfo(x[0]);
+    app.appendChild(b);
+  });
+}
+
+function openProduct(i){
+  const p=products[i];
+  pn.textContent=p.name; pc.textContent=p.character; pp.textContent=p.price;
+  pm.textContent=p.ml; pl.textContent='KALICILIK '+p.longevity;
+  pt.textContent=p.top; ph.textContent=p.heart; pb.textContent=p.base;
+  if(/^https?:\/\//i.test(p.shopier||'')){
+    buy.href=p.shopier; buy.style.display='block'; warn.style.display='none';
+  } else {
+    buy.style.display='none'; warn.style.display='block';
+  }
+  productModal.classList.add('open');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+adminBtn.onclick=()=>loginModal.classList.add('open');
+
+function login(){
+  if(user.value==='MR' && pass.value==='145399'){
+    closeModal('loginModal'); renderAdmin(); adminModal.classList.add('open');
+  } else err.textContent='Kullanıcı adı veya şifre hatalı.';
+}
+
+function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
+
+function renderAdmin(){
+  rows.innerHTML='';
+  products.forEach((p,i)=>{
+    const r=document.createElement('div'); r.className='row';
+    r.innerHTML='<h3>'+esc(p.name)+'</h3>'+
+      '<input data-i="'+i+'" data-k="name" value="'+esc(p.name)+'" placeholder="Ürün adı">'+
+      '<input data-i="'+i+'" data-k="ml" value="'+esc(p.ml)+'" placeholder="ML">'+
+      '<input data-i="'+i+'" data-k="price" value="'+esc(p.price)+'" placeholder="Fiyat">'+
+      '<input data-i="'+i+'" data-k="character" value="'+esc(p.character)+'" placeholder="Koku karakteri">'+
+      '<input data-i="'+i+'" data-k="top" value="'+esc(p.top)+'" placeholder="Üst notalar">'+
+      '<input data-i="'+i+'" data-k="heart" value="'+esc(p.heart)+'" placeholder="Kalp notalar">'+
+      '<input data-i="'+i+'" data-k="base" value="'+esc(p.base)+'" placeholder="Dip notalar">'+
+      '<input data-i="'+i+'" data-k="longevity" value="'+esc(p.longevity)+'" placeholder="Kalıcılık">'+
+      '<input data-i="'+i+'" data-k="shopier" value="'+esc(p.shopier)+'" placeholder="Shopier ürün linki">';
+    rows.appendChild(r);
+  });
+}
+
+function saveAll(){
+  document.querySelectorAll('#rows [data-i]').forEach(e=>products[+e.dataset.i][e.dataset.k]=e.value);
+  localStorage.setItem('MR_NOIR_PRODUCTS',JSON.stringify(products));
+  placeHotspots();
+  alert('MR NOIR bilgileri kaydedildi.');
+}
+
+addEventListener('resize',()=>{placeHotspots(); document.querySelectorAll('.infoHot').forEach(e=>e.remove()); addInfoHotspots();});
+addEventListener('orientationchange',()=>setTimeout(placeHotspots,150));
+placeHotspots(); addInfoHotspots();
+</script>
+</body>
+</html>
