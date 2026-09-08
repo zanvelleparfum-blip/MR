@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>MR — Extrait de Parfum</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{position:fixed;inset:0;overscroll-behavior:none}
+#app{position:fixed;inset:0;width:100vw;height:100dvh;overflow:hidden;background:#000}
+#art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+.hot{position:absolute;z-index:5;width:13vw;height:10vh;min-width:38px;min-height:45px;max-width:100px;max-height:90px;transform:translate(-50%,-50%);border:0;background:transparent;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hot::after{content:none;display:none}
+#admin{position:absolute;z-index:20;right:8px;top:8px;background:rgba(0,0,0,.5);border:1px solid rgba(226,190,101,.6);color:#e4c271;padding:7px 9px;font:8px Arial;letter-spacing:2px}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:15px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px)}
+.modal.open{display:flex}
+.card{position:relative;width:min(560px,94vw);max-height:92dvh;overflow:auto;background:linear-gradient(145deg,#19120c,#050505);border:1px solid #a47f39;color:#eee;padding:22px;box-shadow:0 25px 80px #000;font-family:Arial,sans-serif}
+.close{position:absolute;right:9px;top:8px;width:32px;height:32px;background:#080808;border:1px solid #8f6d35;color:#e8c776;font-size:22px}
+.kicker{font-size:9px;letter-spacing:3px;color:#cba75b;margin-bottom:8px}
+h2{font:400 28px Georgia,serif;letter-spacing:1px;margin:0 0 7px}
+.price{font-size:23px;color:#e1bd67;margin:13px 0}
+.char{font-size:10px;letter-spacing:1.5px;color:#aaa}
+.meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.pill{border:1px solid #594624;padding:7px 9px;font-size:9px;color:#d9c9a9}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}
+.note{border-top:1px solid #4f3c20;padding-top:9px;font-size:10px;line-height:1.5;color:#c4c4c4}
+.note b{display:block;color:#d5b263;font-size:8px;letter-spacing:1.2px;margin-bottom:4px}
+.buy{display:block;margin-top:17px;padding:13px;text-align:center;background:#d2af61;color:#080604;text-decoration:none;font-weight:700;letter-spacing:1px}
+.warn{font-size:10px;color:#999;margin-top:8px}
+input{width:100%;padding:11px;margin:7px 0;background:#0b0b0b;border:1px solid #4d3b20;color:#fff}
+button.save{padding:11px 16px;background:#d2af61;border:0;font-weight:700}
+.adminrow{border:1px solid #40321e;padding:12px;margin-top:10px}
+.adminrow h3{font:400 14px Georgia,serif;color:#dfbd6c;margin:0 0 7px}
+@media(max-width:600px){
+ .hot{width:15vw;height:9vh;min-width:36px;min-height:42px}
+ .hot::after{content:none;display:none}
+ .notes{grid-template-columns:1fr}
+ .card{padding:18px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <img id="art" src="mr-mobile.webp" alt="MR Extrait de Parfum">
+  <button id="admin">YETKİLİ</button>
+</div>
+
+<div id="productModal" class="modal">
+  <div class="card">
+    <button class="close" onclick="closeModal('productModal')">×</button>
+    <div class="kicker">MR · EXTRAIT DE PARFUM</div>
+    <h2 id="pn"></h2>
+    <div id="pc" class="char"></div>
+    <div id="pp" class="price"></div>
+    <div class="meta">
+      <span id="pm" class="pill"></span>
+      <span id="pl" class="pill"></span>
+      <span class="pill">EXTRAIT DE PARFUM</span>
+    </div>
+    <div class="notes">
+      <div class="note"><b>ÜST NOTALAR</b><span id="pt"></span></div>
+      <div class="note"><b>KALP NOTALAR</b><span id="ph"></span></div>
+      <div class="note"><b>DİP NOTALAR</b><span id="pb"></span></div>
+    </div>
+    <a id="buy" class="buy" href="#" target="_blank" rel="noopener">GÜVENLİ ÖDEMEYE GEÇ →</a>
+    <div id="warn" class="warn">Shopier bağlantısı yönetici panelinden eklenir.</div>
+  </div>
+</div>
+
+<div id="loginModal" class="modal">
+  <div class="card" style="max-width:380px">
+    <button class="close" onclick="closeModal('loginModal')">×</button>
+    <div class="kicker">MR · YETKİLİ GİRİŞ</div>
+    <h2>Yönetici</h2>
+    <input id="user" placeholder="Kullanıcı adı" autocomplete="username">
+    <input id="pass" type="password" placeholder="Şifre" autocomplete="current-password">
+    <button class="save" onclick="login()">GİRİŞ YAP</button>
+    <div id="err" class="warn"></div>
+  </div>
+</div>
+
+<div id="adminModal" class="modal">
+  <div class="card" style="width:min(650px,95vw)">
+    <button class="close" onclick="closeModal('adminModal')">×</button>
+    <div class="kicker">MR · YÖNETİCİ PANELİ</div>
+    <h2>Ürün Yönetimi</h2>
+    <div id="rows"></div>
+    <button class="save" onclick="saveAll()" style="margin-top:14px">KAYDET</button>
+    <div class="warn">Not: Bu GitHub Pages sürümünde kayıtlar yalnızca kullanılan cihaz/tarayıcıda saklanır. Gerçek güvenli yönetim için sunucu gerekir.</div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_PRODUCTS = [{"name": "MR I · NOIR", "ml": "50 ML", "price": "₺0", "character": "DERİN · GÜÇLÜ · KARİZMATİK", "top": "Bergamot · Karabiber", "heart": "Sedir · Amber", "base": "Misk · Paçuli", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR II · OMBRE", "ml": "50 ML", "price": "₺0", "character": "GİZEMLİ · ÇEKİCİ · KARANLIK", "top": "Narenciye · Baharat", "heart": "Yasemin · Sedir", "base": "Vanilya · Amber", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR III · ÉLITE", "ml": "50 ML", "price": "₺0", "character": "SOFİSTİKE · ZARİF · ASİL", "top": "Taze narenciye", "heart": "Aromatik çiçekler", "base": "Odunsu · Misk", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR IV · SANG", "ml": "50 ML", "price": "₺0", "character": "TUTKULU · BAŞTAN ÇIKARICI · SICAK", "top": "Baharat · Meyve", "heart": "Gül · Amber", "base": "Vanilya · Odunsular", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR V · AZURE", "ml": "50 ML", "price": "₺0", "character": "FERAH · ENERJİK · CANLI", "top": "Narenciye · Deniz notaları", "heart": "Aromatik notalar", "base": "Misk · Odunsular", "longevity": "8–12 saat", "shopier": ""}, {"name": "MR VI · VÉRT", "ml": "50 ML", "price": "₺0", "character": "DOĞAL · DENGELİ · HUZURLU", "top": "Narenciye · Baharat", "heart": "Çiçeksi · Reçinemsi", "base": "Amber · Odunsular", "longevity": "8–12 saat", "shopier": ""}];
+const HOTSPOTS = [[0.102, 0.468], [0.254, 0.468], [0.405, 0.468], [0.557, 0.468], [0.709, 0.468], [0.861, 0.468]];
+let products = JSON.parse(localStorage.getItem('MR_PRODUCTS') || 'null') || DEFAULT_PRODUCTS;
+
+function imageBox(){
+  const W=innerWidth,H=innerHeight, iw=862, ih=1825;
+  const s=Math.min(W/iw,H/ih);
+  return {s,left:(W-iw*s)/2,top:(H-ih*s)/2};
+}
+
+function placeHotspots(){
+  document.querySelectorAll('.hot').forEach(x=>x.remove());
+  const m=imageBox(), app=document.getElementById('app');
+  HOTSPOTS.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='hot';
+    b.setAttribute('aria-label',products[i].name);
+    b.style.left=(m.left+p[0]*862*m.s)+'px';
+    b.style.top=(m.top+p[1]*1825*m.s)+'px';
+    b.onclick=()=>openProduct(i);
+    app.appendChild(b);
+  });
+}
+
+function openProduct(i){
+  const p=products[i];
+  document.getElementById('pn').textContent=p.name;
+  document.getElementById('pc').textContent=p.character;
+  document.getElementById('pp').textContent=p.price;
+  document.getElementById('pm').textContent=p.ml;
+  document.getElementById('pl').textContent='KALICILIK '+p.longevity;
+  document.getElementById('pt').textContent=p.top;
+  document.getElementById('ph').textContent=p.heart;
+  document.getElementById('pb').textContent=p.base;
+  const buy=document.getElementById('buy'), warn=document.getElementById('warn');
+  if(/^https?:\/\//i.test(p.shopier||'')){
+    buy.href=p.shopier; buy.style.display='block'; warn.style.display='none';
+  } else {
+    buy.style.display='none'; warn.style.display='block';
+  }
+  document.getElementById('productModal').classList.add('open');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+document.getElementById('admin').onclick=()=>document.getElementById('loginModal').classList.add('open');
+
+function login(){
+  const u=document.getElementById('user').value;
+  const p=document.getElementById('pass').value;
+  if(u==='MR' && p==='145399'){
+    closeModal('loginModal'); renderAdmin(); document.getElementById('adminModal').classList.add('open');
+  } else {
+    document.getElementById('err').textContent='Kullanıcı adı veya şifre hatalı.';
+  }
+}
+
+function esc(s){
+ return String(s??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+
+function renderAdmin(){
+ const root=document.getElementById('rows'); root.innerHTML='';
+ products.forEach((p,i)=>{
+   const r=document.createElement('div'); r.className='adminrow';
+   r.innerHTML='<h3>'+esc(p.name)+'</h3>'+
+     '<input data-i="'+i+'" data-k="name" value="'+esc(p.name)+'" placeholder="Ürün adı">'+
+     '<input data-i="'+i+'" data-k="ml" value="'+esc(p.ml)+'" placeholder="ML">'+
+     '<input data-i="'+i+'" data-k="price" value="'+esc(p.price)+'" placeholder="Fiyat">'+
+     '<input data-i="'+i+'" data-k="character" value="'+esc(p.character)+'" placeholder="Koku karakteri">'+
+     '<input data-i="'+i+'" data-k="top" value="'+esc(p.top)+'" placeholder="Üst notalar">'+
+     '<input data-i="'+i+'" data-k="heart" value="'+esc(p.heart)+'" placeholder="Kalp notalar">'+
+     '<input data-i="'+i+'" data-k="base" value="'+esc(p.base)+'" placeholder="Dip notalar">'+
+     '<input data-i="'+i+'" data-k="longevity" value="'+esc(p.longevity)+'" placeholder="Kalıcılık">'+
+     '<input data-i="'+i+'" data-k="shopier" value="'+esc(p.shopier)+'" placeholder="Shopier ürün linki">';
+   root.appendChild(r);
+ });
+}
+
+function saveAll(){
+ document.querySelectorAll('#rows [data-i]').forEach(el=>products[Number(el.dataset.i)][el.dataset.k]=el.value);
+ localStorage.setItem('MR_PRODUCTS',JSON.stringify(products));
+ alert('Bilgiler kaydedildi.');
+ placeHotspots();
+}
+
+addEventListener('resize',placeHotspots);
+addEventListener('orientationchange',()=>setTimeout(placeHotspots,100));
+placeHotspots();
+</script>
+</body>
+</html>
